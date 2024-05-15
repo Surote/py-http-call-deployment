@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: demo-py-http-header
+  name: demo-py-http-header
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: demo-py-http-header
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: demo-py-http-header
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - demo-py-http-header
+              topologyKey: kubernetes.io/hostname
+      containers:
+      - image: quay.io/rh_ee_swongpai/py-http-header:f2abaea4d4f2e36647c9c7f96ce8fbebd9ef0c3f
+        name: py-http-header
+        securityContext:
+          seccompProfile:
+            type: RuntimeDefault
+          allowPrivilegeEscalation: false
+          runAsNonRoot: true
+          capabilities:
+            drop:
+            - ALL
+        resources: {}
